@@ -1,13 +1,18 @@
 package com.simplezero.coding.sharding.service;
 
+import cn.hutool.core.date.DateUnit;
+import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.simplezero.coding.sharding.BaseTest;
 import com.simplezero.coding.sharding.repository.bean.InvInventoryLog;
 import com.simplezero.coding.sharding.repository.bean.OperationLog;
 import com.simplezero.coding.sharding.repository.bean.PickTask;
 import com.simplezero.coding.sharding.repository.bean.RetryBizRecord;
+import org.assertj.core.util.Lists;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Date;
 
 /**
  * @Description:
@@ -16,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class ShardingJdbcTest extends BaseTest {
 
+    public static String pattern0 = "yyyy-MM-dd HH:mm:ss";
 
     @Autowired
     private PickTaskService pickTaskService;
@@ -37,36 +43,39 @@ public class ShardingJdbcTest extends BaseTest {
         //placeId = 1 ==> ds_(1%2).pick_task_(1/2%4) = ds1.pick_task_0
         pickTaskService.list(new QueryWrapper<PickTask>().lambda()
                 .eq(PickTask::getPlaceId, 1));
+        //支持 IN
+        pickTaskService.list(new QueryWrapper<PickTask>().lambda()
+                .in(PickTask::getPlaceId, Lists.newArrayList(1, 2)));
     }
 
     @Test
     public void testPreciseSharding() {
-
-        //不带分片键 查询所有物理表
-        retryBizRecordService.list(new QueryWrapper<RetryBizRecord>().lambda()
-                .eq(RetryBizRecord::getBizId, 1));
-
-        //只有分表键 扫所有的库
-        //sharding_key = 2022_101 = 1 ==> ds_(1%2).retry_biz_record_(2022_101%4) = ds1.retry_biz_record_2022_1
-        retryBizRecordService.list(new QueryWrapper<RetryBizRecord>().lambda()
-                .eq(RetryBizRecord::getShardingKey, "202202_101"));
-
-        //placeid = 1 ==> ds_(1%2)
+        //bizId = 1 ==> ds_(1%2) ==> ds1
         //sharding_key = 2022_101  ==> retry_biz_record_(2022_101%4) = retry_biz_record_2022_1
         retryBizRecordService.list(new QueryWrapper<RetryBizRecord>().lambda()
+                .eq(RetryBizRecord::getBizId, 1)
                 .eq(RetryBizRecord::getShardingKey, "202202_101"));
-
-        //sharding_key = 2022_101  ==> retry_biz_record_(2022_101%4) = retry_biz_record_2022_1
-        operationLogService.list(new QueryWrapper<OperationLog>().lambda()
-                .eq(OperationLog::getMonth, "202202"));
     }
 
 
     @Test
-    public void testComplexKeysSharding() {
+    public void testRangeSharding() {
+        //PreciseShardingAlgorithm = IN
+        operationLogService.list(new QueryWrapper<OperationLog>().lambda()
+                .eq(OperationLog::getCreateTime, new Date()));
 
+        //RangeShardingAlgorithm <> BETWEEN AND
+        Date start = DateUtil.parse("2022-01-01 12:00:00", pattern0);
+        Date end = DateUtil.parse("2022-03-01 12:00:00", pattern0);
+        operationLogService.list(new QueryWrapper<OperationLog>().lambda()
+                .ge(OperationLog::getCreateTime, start)
+                .le(OperationLog::getCreateTime, end));
+    }
+
+    @Test
+    public void testComplexKeysSharding() {
         invInventoryLogService.list(new QueryWrapper<InvInventoryLog>().lambda()
-                .eq(InvInventoryLog::getPlaceId,2L)
+                .eq(InvInventoryLog::getPlaceId, 2L)
                 .eq(InvInventoryLog::getMonth, "2021_10"));
     }
 

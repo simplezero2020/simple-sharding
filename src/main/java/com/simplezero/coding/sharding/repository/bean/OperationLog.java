@@ -2,6 +2,7 @@ package com.simplezero.coding.sharding.repository.bean;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+import java.util.Date;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
 import lombok.Data;
@@ -13,7 +14,7 @@ import lombok.EqualsAndHashCode;
  * </p>
  *
  * @author simplezero
- * @since 2022-02-17
+ * @since 2022-02-18
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -44,9 +45,9 @@ public class OperationLog implements Serializable {
     private String userName;
 
     /**
-     * 月份
+     * 创建时间
      */
-    private String month;
+    private Date createTime;
 
 
 }

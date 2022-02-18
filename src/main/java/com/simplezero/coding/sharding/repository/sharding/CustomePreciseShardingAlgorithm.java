@@ -8,7 +8,7 @@ import java.util.Collection;
 
 
 @Slf4j
-public class CustomerPreciseShardingAlgorithm implements PreciseShardingAlgorithm<String> {
+public class CustomePreciseShardingAlgorithm implements PreciseShardingAlgorithm<String> {
 
     private static final String SEPARATOR = "_";
 

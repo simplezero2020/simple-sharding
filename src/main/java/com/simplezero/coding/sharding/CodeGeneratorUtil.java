@@ -21,7 +21,7 @@ class CodeGeneratorUtil {
     public static void main(String[] args) {
 
         //todo 需要生成的表
-        String[] tables = new String[]{"inv_inventory_log"};
+        String[] tables = new String[]{"operation_log"};
 
         //代码生成器
         AutoGenerator mpg = new AutoGenerator();
@@ -46,7 +46,7 @@ class CodeGeneratorUtil {
                 "=true&characterEncoding=UTF-8")
                 .setDriverName("com.mysql.cj.jdbc.Driver")
                 .setUsername("root")
-                .setPassword("zlzhou");
+                .setPassword("");
         mpg.setDataSource(dsc);
 
         //包配置

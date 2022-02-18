@@ -9,26 +9,16 @@ import java.util.Collection;
 import java.util.List;
 
 @Slf4j
-public class CustomerComplexKeysShardingAlgorithm implements ComplexKeysShardingAlgorithm {
-
-    /**
-     * 月份
-     */
-    private static final String COLUMN_MONTH = "month";
-    /**
-     * 地点
-     */
-    private static final String COLUMN_PLACE_ID = "place_id";
+public class CustomeComplexKeysShardingAlgorithm implements ComplexKeysShardingAlgorithm {
 
     @Override
     public Collection<String> doSharding(Collection availableTargetNames, ComplexKeysShardingValue shardingValue) {
         List<String> tableNameList = new ArrayList<>();
-        //逻辑表名
         String logicTableName = shardingValue.getLogicTableName();
         Collection<String> monthCollection =
-                (Collection<String>) shardingValue.getColumnNameAndShardingValuesMap().get(COLUMN_MONTH);
+                (Collection<String>) shardingValue.getColumnNameAndShardingValuesMap().get("month");
         Collection<Long> placeIdCollection =
-                (Collection<Long>) shardingValue.getColumnNameAndShardingValuesMap().get(COLUMN_PLACE_ID);
+                (Collection<Long>) shardingValue.getColumnNameAndShardingValuesMap().get("place_id");
         for (String originalMonth : monthCollection) {
             for (Long placeId : placeIdCollection) {
                 String tableName = logicTableName + "_" + originalMonth + "_" + (placeId / 2 % 128);
