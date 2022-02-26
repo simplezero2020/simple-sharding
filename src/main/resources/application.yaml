@@ -20,13 +20,13 @@ spring:
         driver-class-name: com.mysql.cj.jdbc.Driver
         url: jdbc:mysql://127.0.0.1:3306/simplezero_0?serverTimezone=Hongkong&autoReconnect=true&useUnicode=true&characterEncoding=utf8
         username: root
-        password: *
+        password: zlzhou
       ds1:
         type: com.alibaba.druid.pool.DruidDataSource
         driver-class-name: com.mysql.cj.jdbc.Driver
         url: jdbc:mysql://127.0.0.1:3307/simplezero_1?serverTimezone=Hongkong&autoReconnect=true&useUnicode=true&characterEncoding=utf8
         username: root
-        password: *
+        password: zlzhou
     props:
       sql:
         show: true
@@ -39,17 +39,17 @@ spring:
         none:
           any:
       tables:
-        # 行表达式配置 按照 place_id 分库分表
-        pick_task:
-          actual-data-nodes: ds$->{0..1}.pick_task_$->{0..3}
-          database-strategy:
-            inline:
-              sharding-column: place_id
-              algorithm-expression: ds$->{place_id % 4}
-          tableStrategy:
-            inline:
-              shardingColumn: place_id
-              algorithmExpression: pick_task_$->{place_id.intdiv(2)  % 4}
+#        # 行表达式配置 按照 place_id 分库分表
+#        pick_task:
+#          actual-data-nodes: ds$->{0..1}.pick_task_$->{0..3}
+#          database-strategy:
+#            inline:
+#              sharding-column: place_id
+#              algorithm-expression: ds$->{place_id % 4}
+#          tableStrategy:
+#            inline:
+#              shardingColumn: place_id
+#              algorithmExpression: pick_task_$->{place_id.intdiv(2)  % 4}
 
         # 精确分片 按照 place_id 分库 sharding_key 分表
         retry_biz_record:
@@ -83,6 +83,12 @@ spring:
             complex:
               sharding-columns: month,place_id
               algorithm-class-name: com.simplezero.coding.sharding.repository.sharding.CustomeComplexKeysShardingAlgorithm
-
+        # 一致性hash 分表测试
+        pick_task:
+          actual-data-nodes: ds0.pick_task_$->{0..4}
+          tableStrategy:
+            standard:
+              shardingColumn: place_id
+              precise-algorithm-class-name: com.simplezero.coding.sharding.repository.sharding.ConsistentShardingAlgorithm
   application:
     name: simple-sharding

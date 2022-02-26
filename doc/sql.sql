@@ -64,6 +64,20 @@ CREATE TABLE `pick_task_3`
   DEFAULT CHARSET = utf8mb4 COMMENT ='分拣任务';
 
 
+CREATE TABLE `pick_task_4`
+(
+    `id`             bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
+    `warehouse_id`   bigint(20)          NOT NULL COMMENT '仓库ID',
+    `warehouse_code` varchar(64)         NOT NULL DEFAULT '' COMMENT '仓库编码',
+    `place_id`       bigint(20)          NOT NULL DEFAULT '0' COMMENT '目的流向ID',
+    `place_code`     varchar(64)         NOT NULL DEFAULT '' COMMENT '目的流向编码',
+    `item_id`        bigint(20)          NOT NULL COMMENT '销售商品ID',
+    PRIMARY KEY (`id`)
+) ENGINE = InnoDB
+  AUTO_INCREMENT = 1
+  DEFAULT CHARSET = utf8mb4 COMMENT ='分拣任务';
+
+
 CREATE TABLE retry_biz_record
 (
     id           bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
